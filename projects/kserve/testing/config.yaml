@@ -131,8 +131,6 @@ ci_presets:
 
   vllm:
     kserve.model.runtime: vllm
-    # IBM image hardcoded until RHOAI includes an image in the release
-    kserve.model.serving_runtime.kserve.image: "quay.io/modh/vllm:rhoai-2.10-2cf4d15"
     tests.e2e.llm_load_test.args.plugin: "openai_plugin"
     tests.e2e.llm_load_test.args.streaming: true
     tests.e2e.llm_load_test.args.interface: "http"
@@ -255,8 +253,18 @@ ci_presets:
   # --
   # single-model vLLM
   # --
+  vllm_mixtral_only:
+    extends: [vllm_cpt_single_model_gating]
+    tests.e2e.models:
+    - name: mixtral-8x7b
+      testing:
+        size: large
+    kserve.model.serving_runtime.update_image: false
+    kserve.model.serving_runtime.kserve.image: quay.io/opendatahub/vllm:fast-1a26fcf
+
+
   vllm_cpt_single_model_gating_light:
-    extends: [raw, e2e_gpu, vllm]
+    extends: [raw, e2e_gpu, vllm, use_intlab_minio]
     tests.e2e.models:
     - name: phi-2
       testing:
